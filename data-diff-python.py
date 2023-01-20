@@ -21,7 +21,7 @@ pip install 'snowflake-connector-python[pandas]'
 3.  Quit your Terminal and open a new one. This will import the variables 
     you just saved in your .zshrc file.
 4.  cd into the directory where you've saved this file.
-5.  Run this command: python3 data-diff.py. 
+5.  Run this command: python3 data-diff-python.py. 
 
 """
 
