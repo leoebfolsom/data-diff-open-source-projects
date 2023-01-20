@@ -38,7 +38,7 @@ primary_key = 'ACTIVITY_ID'
 # Set your options:
 
 conflicts_only_or_all_columns = "Only Columns With Differences"
-# Alternateively, set this to "All Diffed Columns"
+# Alternatively, set this to "All Diffed Columns"
 
 matching_primary_keys_only = "Common Primary Keys Only"
 # Alternatively, set this to "Common Primary Keys and Non-Matching Primary Keys"
@@ -177,6 +177,8 @@ if conflicts_only_or_all_columns == "Only Columns With Differences":
 else:
     final_output = output_base
 
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', 350)
 print(primary_keys_df)
 print("")
 print(conflicts_df)
