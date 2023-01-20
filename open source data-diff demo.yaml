@@ -1,0 +1,621 @@
+schemaVersion: 1
+meta:
+  sourceVersionId: d92aa2bf-637f-409a-adf3-571cd530fe08 # DO NOT CHANGE - Hex uses this to match up project versions when reimporting the file
+  description: Diff any two tables in your Snowflake database.
+  projectId: 1f63863b-ed3d-4711-959d-4d0b9801276e # DO NOT CHANGE - Unique ID of the project from which this file was generated
+  title: open source data-diff demo
+  timezone: null
+  appTheme: SYS_PREF
+  codeLanguage: PYTHON
+  status:
+    name: In Progress
+  categories:
+    - name: Internal
+  castDecimalsDefault: true
+  logicQueryCacheTimeout:
+    type: fixed
+    unit: minutes
+    timeout: 60
+  publishedQueryCacheTimeout:
+    type: fixed
+    unit: minutes
+    timeout: 60
+projectAssets:
+  dataConnections: []
+  envVars: []
+  secrets:
+    - secretName: snowflake_account
+    - secretName: snowflake_database
+    - secretName: snowflake_pw
+    - secretName: snowflake_role
+    - secretName: snowflake_user
+    - secretName: snowflake_warehouse
+sharedAssets:
+  secrets: []
+  vcsPackages: []
+  dataConnections:
+    - dataConnectionId: 457098bf-afcb-4962-aff6-b2a6dd95a783 # Snowflake (snowflake)
+cells:
+  - cellType: TEXT
+    cellId: 661aee41-46cc-4ebb-9b6b-b186209e0c8b # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      richText:
+        - type: paragraph
+          children:
+            - text: Please wait patiently as the app takes a few moments to load.
+  - cellType: CODE
+    cellId: fd9d4df6-9a5c-456b-99a0-fc876d53aa5a # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Install data-diff.
+    config:
+      source: |-
+        !pip3 install -q data-diff
+        !pip3 install -q 'data-diff[snowflake]'
+  - cellType: CODE
+    cellId: 38430613-d0a1-466d-b2c4-4a171351e76e # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Import packages.
+    config:
+      source: |-
+        import data_diff
+        import pandas
+        import numpy as np
+        from data_diff import connect_to_table, diff_tables, connect
+  - cellType: MARKDOWN
+    cellId: 6cd5c56d-faa4-44a7-a1a2-e4dc9a3f5926 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      source: |-
+        Examples:
+
+        - Comparing a prod table like `ANALYTICS.DIM_ORGS` to a dev table like `PR_NUM_130.DIM_ORGS`.
+        - Comparing a prod table like `ANALYTICS.DIM_ORGS` to a dev table like `DBT_YOURNAME.DIM_ORGS`.
+  - cellType: SQL
+    cellId: 369a0022-119f-43e4-84eb-83ba8849e00e # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Snowflake schemas
+    config:
+      source: select schema_name from {{ snowflake_database | sqlsafe }}.information_schema.schemata
+      dataFrameCell: false
+      dataConnectionId: 457098bf-afcb-4962-aff6-b2a6dd95a783
+      resultVariableName: snowflake_schemas
+      enableCache: false
+      runOnLoad: false
+      runOnSchedule: false
+      useRichDisplay: false
+      sqlCellOutputType: PANDAS
+      useQueryMode: false
+      castDecimals: true
+      useNativeDates: true
+      allowDuplicateColumns: true
+      tableDisplayConfig: null
+  - cellType: INPUT
+    cellId: 07209d6c-076f-4a48-ac0f-a3807bc14907 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Schema A
+    config:
+      inputType: DROPDOWN
+      name: schema_a
+      outputType: DYNAMIC
+      options:
+        valueOptions:
+          dfName: snowflake_schemas
+          columnName: SCHEMA_NAME
+          variableName: snowflake_schemas['SCHEMA_NAME']
+      defaultValue: null
+  - cellType: INPUT
+    cellId: 915bd81f-1c58-403c-b0ee-858404a75f8f # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Schema B
+    config:
+      inputType: DROPDOWN
+      name: schema_b
+      outputType: DYNAMIC
+      options:
+        valueOptions:
+          dfName: snowflake_schemas
+          columnName: SCHEMA_NAME
+          variableName: snowflake_schemas['SCHEMA_NAME']
+      defaultValue: PR_NUM_181
+  - cellType: SQL
+    cellId: 397b9d74-32eb-4314-bc39-c674a8979676 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Schema A Tables
+    config:
+      source: |-
+        select table_name
+        from {{ snowflake_database | sqlsafe }}.information_schema.tables
+        where table_schema = {{schema_a}}
+      dataFrameCell: false
+      dataConnectionId: 457098bf-afcb-4962-aff6-b2a6dd95a783
+      resultVariableName: schema_a_tables
+      enableCache: false
+      runOnLoad: false
+      runOnSchedule: false
+      useRichDisplay: false
+      sqlCellOutputType: PANDAS
+      useQueryMode: false
+      castDecimals: true
+      useNativeDates: true
+      allowDuplicateColumns: true
+      tableDisplayConfig: null
+  - cellType: SQL
+    cellId: 03f91c5b-e425-4a7a-969b-e8cd253ecd0b # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Schema B Tables
+    config:
+      source: |-
+        select table_name
+        from {{ snowflake_database | sqlsafe }}.information_schema.tables
+        where table_schema = {{schema_b}}
+      dataFrameCell: false
+      dataConnectionId: 457098bf-afcb-4962-aff6-b2a6dd95a783
+      resultVariableName: schema_b_tables
+      enableCache: false
+      runOnLoad: false
+      runOnSchedule: false
+      useRichDisplay: false
+      sqlCellOutputType: PANDAS
+      useQueryMode: false
+      castDecimals: true
+      useNativeDates: true
+      allowDuplicateColumns: true
+      tableDisplayConfig: null
+  - cellType: INPUT
+    cellId: 501b3a95-956a-433e-954c-0f4529e2b582 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Table A
+    config:
+      inputType: DROPDOWN
+      name: table_a
+      outputType: DYNAMIC
+      options:
+        valueOptions:
+          dfName: schema_a_tables
+          columnName: TABLE_NAME
+          variableName: schema_a_tables['TABLE_NAME']
+      defaultValue: ORG_ACTIVITY_STREAM
+  - cellType: INPUT
+    cellId: ea8ebeac-58d3-4577-a25b-f2e9b8deb122 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Table B
+    config:
+      inputType: DROPDOWN
+      name: table_b
+      outputType: DYNAMIC
+      options:
+        valueOptions:
+          dfName: schema_b_tables
+          columnName: TABLE_NAME
+          variableName: schema_b_tables['TABLE_NAME']
+      defaultValue: ORG_ACTIVITY_STREAM
+  - cellType: SQL
+    cellId: e193c8ef-5865-4654-8033-390243497cf6 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Show columns a
+    config:
+      source: |-
+        -- show columns in {{ snowflake_database | sqlsafe }}.{{ schema_a | sqlsafe }}.{{ table_a | sqlsafe }}
+        select column_name
+        from {{ snowflake_database | sqlsafe }}.information_schema.columns
+        where table_schema = {{ schema_a }} and table_name = {{ table_a }}
+        order by ordinal_position
+      dataFrameCell: false
+      dataConnectionId: 457098bf-afcb-4962-aff6-b2a6dd95a783
+      resultVariableName: show_columns_a
+      enableCache: false
+      runOnLoad: false
+      runOnSchedule: false
+      useRichDisplay: false
+      sqlCellOutputType: PANDAS
+      useQueryMode: false
+      castDecimals: true
+      useNativeDates: true
+      allowDuplicateColumns: true
+      tableDisplayConfig: null
+  - cellType: SQL
+    cellId: 73aa2b54-2d35-4fde-b5d5-6ac43cb5084a # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Show columns b
+    config:
+      source: |-
+        -- show columns in {{ snowflake_database | sqlsafe }}.{{ schema_b | sqlsafe }}.{{ table_b | sqlsafe }}
+        select column_name
+        from {{ snowflake_database | sqlsafe }}.information_schema.columns
+        where table_schema = {{ schema_b }} and table_name = {{ table_b }}
+        order by ordinal_position
+      dataFrameCell: false
+      dataConnectionId: 457098bf-afcb-4962-aff6-b2a6dd95a783
+      resultVariableName: show_columns_b
+      enableCache: false
+      runOnLoad: false
+      runOnSchedule: false
+      useRichDisplay: false
+      sqlCellOutputType: PANDAS
+      useQueryMode: false
+      castDecimals: true
+      useNativeDates: true
+      allowDuplicateColumns: true
+      tableDisplayConfig: null
+  - cellType: CODE
+    cellId: 262e1c39-fe92-4886-b3d3-5a26c1db1fea # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      source: |-
+        columns_table_a = show_columns_a["COLUMN_NAME"].to_list()
+        columns_table_b = show_columns_b["COLUMN_NAME"].to_list()
+        common_columns = [element for element in columns_table_a if element in columns_table_b] # not using a set because even though it's more efficient, it doesn't preserve order
+  - cellType: CODE
+    cellId: a359e549-defa-4f54-ab53-cf69bae65a35 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      source: |-
+        columns_unique_to_a = [i for i in columns_table_a if i not in columns_table_b]
+        columns_unique_to_b = [i for i in columns_table_b if i not in columns_table_a]
+  - cellType: CODE
+    cellId: 71ab3a1c-7cf4-4f6d-a45e-bcd2ff23556e # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      source: |
+        columns_unique_to_a_df = pandas.DataFrame(columns_unique_to_a, columns=['Columns Unique to Table A'])
+        columns_unique_to_b_df = pandas.DataFrame(columns_unique_to_b, columns=['Columns Unique to Table B'])
+  - cellType: INPUT
+    cellId: 2a535198-cc03-4a87-a498-66f51936a5d4 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Select a primary key that will be used to compare the two tables.
+    config:
+      inputType: DROPDOWN
+      name: primary_key
+      outputType: DYNAMIC
+      options:
+        valueOptions:
+          variableName: common_columns
+      defaultValue: ACTIVITY_ID
+  - cellType: CODE
+    cellId: a9787d2f-7a1d-48f8-adac-fa16d18b15d4 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      source: |-
+        common_columns_minus_primary_key = common_columns.copy()
+        common_columns_minus_primary_key.remove(primary_key)
+  - cellType: MARKDOWN
+    cellId: 13ef8600-dfbb-4417-a5a9-6a28445838ea # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      source: ---
+  - cellType: INPUT
+    cellId: 26c72a9f-a8b5-46c6-9875-e69a9c4d2f27 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Select columns to diff.
+    config:
+      inputType: MULTISELECT
+      name: additional_columns_to_diff_input
+      outputType: DYNAMIC
+      options:
+        multiValueOptions:
+          variableName: common_columns_minus_primary_key
+      defaultValue:
+        - __hex_multiselect_select_all_option__
+  - cellType: CODE
+    cellId: edc56e63-6807-4e24-8146-971077c6c99e # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Create Snowflake connection.
+    config:
+      source: |-
+        SNOWFLAKE_CONN_INFO = {
+            "driver": "snowflake",
+            "user": snowflake_user,
+            "password": snowflake_pw,
+            "account": snowflake_account,
+            "database": snowflake_database,
+            "schema": schema_a,
+            "warehouse": snowflake_warehouse,
+            "role": snowflake_role
+        }
+  - cellType: INPUT
+    cellId: 6653c161-86f3-4e55-9a78-17c1babb3d9e # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Select columns to display in data diff results table.
+    config:
+      inputType: DROPDOWN
+      name: conflicts_only_or_all_columns
+      outputType: STRING
+      options:
+        valueOptions:
+          - All Diffed Columns
+          - Only Columns With Differences
+      defaultValue: All Diffed Columns
+  - cellType: INPUT
+    cellId: a9eb4d92-8846-4a33-a17c-5930b3b33dae # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Select rows to include in the diff results table.
+    config:
+      inputType: DROPDOWN
+      name: matching_primary_keys_only
+      outputType: STRING
+      options:
+        valueOptions:
+          - Common Primary Keys Only
+          - Common Primary Keys and Non-Matching Primary Keys
+      defaultValue: Common Primary Keys Only
+  - cellType: INPUT
+    cellId: 1367e221-df68-4532-8f65-168dbdc7e2eb # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: Add a where clause. For example, exclude recent data.
+    config:
+      inputType: TEXT_INPUT
+      name: where_clause
+      outputType: STRING
+      options: null
+      defaultValue: event_timestamp > '2022-11-05' and event_timestamp < '2022-11-07'
+  - cellType: INPUT
+    cellId: adf1910d-f0e2-4427-a9bf-cbbb4d6ffe26 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      inputType: BUTTON
+      name: data_diff
+      outputType: BOOLEAN
+      options:
+        intent: primary
+        icon: play
+        text: Data Diff
+      defaultValue: null
+  - cellType: CODE
+    cellId: 03d436ac-9804-4cd3-a878-4fb11c0a6f8c # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: null
+    config:
+      source: |-
+        if data_diff:
+            additional_columns_to_diff = additional_columns_to_diff_input.copy()
+            table_a_connection = connect_to_table(SNOWFLAKE_CONN_INFO, table_a, primary_key)
+            table_b_connection = connect_to_table(SNOWFLAKE_CONN_INFO, schema_b+"."+table_b, primary_key) 
+            diff_output_raw = list(diff_tables(table_a_connection, table_b_connection, algorithm='joindiff', extra_columns=tuple(additional_columns_to_diff), where=where_clause))
+  - cellType: CODE
+    cellId: 0d312472-4d2d-41d9-b045-b669b43dc132 # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: "Data Diff Summary:"
+    config:
+      source: |-
+        if data_diff:
+            diff_output = diff_output_raw.copy()
+            df_output = pandas.DataFrame(diff_output, columns =['a', 'b'])
+            column_values = pandas.DataFrame(df_output['b'].to_list(), columns = [primary_key] + additional_columns_to_diff)
+            all_columns_values_tall = pandas.concat([df_output, column_values], axis=1).\
+            drop('b', axis=1)
+            all_columns_values_tall.loc[all_columns_values_tall['a'] == '-', 'a'] = 'Table A'
+            all_columns_values_tall.loc[all_columns_values_tall['a'] == '+', 'a'] = 'Table B'
+            all_columns_values_pivot = all_columns_values_tall.\
+                pivot(index=primary_key, columns='a',values=[primary_key] + additional_columns_to_diff)
+            all_columns_values_pivot
+            all_columns = [primary_key] + additional_columns_to_diff
+            each_column_twice = [item for item in all_columns for _ in range(2)]
+            tuples = [(x, 'Table A' if idx % 2 == 0 else 'Table B') for idx, x in enumerate(each_column_twice)]
+            index = pandas.MultiIndex.from_tuples(tuples, names=[None, "a"])
+            df_with_index = pandas.DataFrame(columns=index)
+            all_columns_values_pivot_multiindex = pandas.concat([df_with_index, all_columns_values_pivot])
+
+            all_columns_values_pivot_multiindex.columns = [': '.join(i) for i in all_columns_values_pivot_multiindex.columns]
+            matching_primary_key_rows = all_columns_values_pivot_multiindex.loc[all_columns_values_pivot_multiindex[primary_key+": Table A"] == \
+            all_columns_values_pivot_multiindex[primary_key+": Table B"]]
+
+            if len(columns_unique_to_a) > 0:
+                display(columns_unique_to_a_df)
+            
+            if len(columns_unique_to_b) > 0:
+                display(columns_unique_to_b_df)    
+
+            # Display missing primary keys
+            pks_missing_from_table_a = all_columns_values_pivot_multiindex[[primary_key+": Table A"]].isna().sum()[0]   
+            pks_missing_from_table_b = all_columns_values_pivot_multiindex[[primary_key+": Table B"]].isna().sum()[0]
+            primary_keys_df = pandas.DataFrame([[pks_missing_from_table_a, pks_missing_from_table_b]], columns=['Primary Keys Missing from Table A', 'Primary Keys Missing from Table B'])
+
+
+            # Display columns with conflicts
+            columns_with_conflicts = []
+            conflicts_df = pandas.DataFrame(columns=['Column', 'Conflicting Rows'])
+
+            for i in additional_columns_to_diff:
+                conflicts = (matching_primary_key_rows[i+": Table A"] != matching_primary_key_rows[i+": Table B"]) & \
+                    (matching_primary_key_rows[i+": Table A"].notnull() | matching_primary_key_rows[i+": Table B"].notnull())
+                sum_conflicts = sum(conflicts)
+                conflicts_df.loc[len(conflicts_df.index)] = [i, sum_conflicts]
+                if sum(conflicts) > 0:
+                    columns_with_conflicts += [i+": Table A", i+": Table B"]
+                
+                # Ideally, add T/F column to identify conflicts, which will be displayed colorfully conditionally. Or better yet, make the table itself colorful.
+
+            if matching_primary_keys_only == "Only Primary Keys That Exist in Both Tables":
+                output_base = matching_primary_key_rows
+            else:
+                output_base = all_columns_values_pivot_multiindex
+                
+            if conflicts_only_or_all_columns == "Only Columns With Differences":
+                final_output = output_base[output_base.columns.intersection(columns_with_conflicts)]
+
+            else:
+                final_output = output_base
+            
+        display(primary_keys_df)
+        display(conflicts_df)
+  - cellType: TABLE_DISPLAY
+    cellId: cfc0a91e-072b-4cd6-87f7-7c19a4b35b2b # DO NOT CHANGE - Hex uses this to match up cells when reimporting the file, and detect any changes to existing cells
+    cellLabel: "Row-Level Data Diff:"
+    config:
+      dataFrameVariableName: final_output
+      tableDisplayConfig:
+        pageSize: 12
+        hideIcons: true
+        hideIndex: true
+        defaultSortColumn: null
+        defaultSortDirection: ASC
+        conditionalFormatting: null
+        filters: null
+        columnProperties:
+          - originalName: "ACTIVITY_ID: Table A"
+            renameTo: null
+            size: 189
+            wrapText: null
+            displayFormat: null
+          - originalName: "ACTIVITY_ID: Table B"
+            renameTo: null
+            size: 189
+            wrapText: null
+            displayFormat: null
+          - originalName: "ACTIVITY: Table A"
+            renameTo: null
+            size: 178
+            wrapText: null
+            displayFormat: null
+          - originalName: "ACTIVITY: Table B"
+            renameTo: null
+            size: 169
+            wrapText: null
+            displayFormat: null
+          - originalName: "EVENT_TIMESTAMP: Table A"
+            renameTo: null
+            size: 205
+            wrapText: null
+            displayFormat: null
+          - originalName: "EVENT_TIMESTAMP: Table B"
+            renameTo: null
+            size: 206
+            wrapText: null
+            displayFormat: null
+          - originalName: "ORG_KEY: Table A"
+            renameTo: null
+            size: 150
+            wrapText: null
+            displayFormat: null
+          - originalName: "ORG_KEY: Table B"
+            renameTo: null
+            size: 150
+            wrapText: null
+            displayFormat: null
+          - originalName: "ORG_ID: Table A"
+            renameTo: null
+            size: 142
+            wrapText: null
+            displayFormat: null
+        columnOrdering: null
+appLayout:
+  fullWidth: false
+  visibleMetadataFields:
+    - NAME
+    - DESCRIPTION
+    - AUTHOR
+    - LAST_EDITED
+    - LAST_RUN
+    - CATEGORIES
+    - STATUS
+    - TABLE_OF_CONTENTS
+  rows:
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: 661aee41-46cc-4ebb-9b6b-b186209e0c8b
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 60
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: 07209d6c-076f-4a48-ac0f-a3807bc14907
+              height: null
+              showLabel: true
+        - start: 60
+          end: 120
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: 915bd81f-1c58-403c-b0ee-858404a75f8f
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 60
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: 501b3a95-956a-433e-954c-0f4529e2b582
+              height: null
+              showLabel: true
+        - start: 60
+          end: 120
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: ea8ebeac-58d3-4577-a25b-f2e9b8deb122
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: 2a535198-cc03-4a87-a498-66f51936a5d4
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: 26c72a9f-a8b5-46c6-9875-e69a9c4d2f27
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 60
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: 6653c161-86f3-4e55-9a78-17c1babb3d9e
+              height: null
+              showLabel: true
+        - start: 60
+          end: 120
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: a9eb4d92-8846-4a33-a17c-5930b3b33dae
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: 1367e221-df68-4532-8f65-168dbdc7e2eb
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: 0d312472-4d2d-41d9-b045-b669b43dc132
+              height: null
+              showLabel: true
+    - columns:
+        - start: 0
+          end: 120
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: cfc0a91e-072b-4cd6-87f7-7c19a4b35b2b
+              height: null
+              showLabel: true
+    - columns:
+        - start: 30
+          end: 87
+          elements:
+            - showSource: false
+              hideOutput: false
+              type: CELL
+              cellId: adf1910d-f0e2-4427-a9bf-cbbb4d6ffe26
+              height: null
+              showLabel: true
